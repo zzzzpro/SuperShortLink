@@ -9,6 +9,7 @@ namespace SuperShortLink.Repository
         Default,
         SqlServer,
         MySQL,
-        PostgreSQL
+        PostgreSQL,
+        SQLite
     }
 }

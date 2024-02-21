@@ -61,6 +61,21 @@ namespace SuperShortLink
                     DatabaseType.MySQL => "last_insert_id()",
                     DatabaseType.PostgreSQL => "lastval()",
                     DatabaseType.SqlServer => "scope_identity()",
+                    DatabaseType.SQLite => "last_insert_rowid()",
+                };
+            }
+        }
+
+        public string ParamSQL
+        {
+            get
+            {
+                return DbType switch
+                {
+                    DatabaseType.MySQL => "@",
+                    DatabaseType.PostgreSQL => "@",
+                    DatabaseType.SqlServer => "@",
+                    DatabaseType.SQLite => ":",
                 };
             }
         }

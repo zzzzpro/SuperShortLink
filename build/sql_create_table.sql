@@ -84,3 +84,48 @@ CREATE TABLE short_link_appication (
     update_time datetime2(0)   NOT NULL,
     status      INT            NOT NULL,
 );
+-- ----------------------------
+-- SQLite
+-- ----------------------------
+PRAGMA foreign_keys = false;
+CREATE TABLE "short_link" (
+  "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "short_url" VARCHAR(255) NOT NULL,
+  "origin_url" VARCHAR(255) NOT NULL,
+  "create_time" TIMESTAMP NOT NULL,
+  "update_time" TIMESTAMP NOT NULL,
+  "access_count" INTEGER NOT NULL
+);
+
+CREATE TABLE "short_link_application" (
+  "app_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "app_code" VARCHAR(255) NOT NULL,
+  "app_name" VARCHAR(255) NOT NULL,
+  "app_secret" VARCHAR(255) NOT NULL,
+  "remark" VARCHAR(500) NOT NULL,
+  "create_time" TIMESTAMP NOT NULL,
+  "update_time" TIMESTAMP NOT NULL,
+  "status" INTEGER NOT NULL
+);
+
+DROP TABLE IF EXISTS "short_link_log";
+CREATE TABLE "short_link_log" (
+  "log_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "link_id" INTEGER NOT NULL,
+  "ip" VARCHAR(255) NOT NULL,
+  "os_type" INTEGER NOT NULL,
+  "browser_type" INTEGER NOT NULL,
+  "create_time" TIMESTAMP NOT NULL
+);
+
+DROP TABLE IF EXISTS "sqlite_sequence";
+CREATE TABLE "sqlite_sequence" (
+  "name",
+  "seq"
+);
+
+UPDATE "sqlite_sequence" SET seq = 1 WHERE name = 'short_link';
+
+UPDATE "sqlite_sequence" SET seq = 1 WHERE name = 'short_link_log';
+
+PRAGMA foreign_keys = true;

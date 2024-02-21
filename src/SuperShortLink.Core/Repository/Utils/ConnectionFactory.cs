@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Data.SqlClient;
+using System.Data.SQLite;
 using MySql.Data.MySqlClient;
 using Npgsql;
 
@@ -52,6 +53,9 @@ namespace SuperShortLink.Repository
                     break;
                 case DatabaseType.PostgreSQL:
                     connection = new NpgsqlConnection(strConn);
+                    break;
+                case DatabaseType.SQLite:
+                    connection = new SQLiteConnection(strConn);
                     break;
                 default:
                     throw new ArgumentNullException($"不支持的{dbType.ToString()}数据库类型");

@@ -11,9 +11,11 @@ namespace SuperShortLink.Repository
     public class LogRepository : BaseRepository, ILogRepository
     {
         private readonly string _autoIncrementSql;
+        private readonly string _paramSql;
         public LogRepository(IOptionsSnapshot<ShortLinkOptions> options) : base(options)
         {
             _autoIncrementSql = options.Value.AutoIncrementSQL;
+            _paramSql = options.Value.ParamSQL;
         }
 
         /// <summary>
@@ -22,10 +24,10 @@ namespace SuperShortLink.Repository
         public async Task InsertAsync(LogModel model)
         {
             var sb = new StringBuilder(
-              @"insert into short_link_log
+@$"insert into short_link_log
                     (link_id, ip, os_type, browser_type, create_time)
                 values
-                    (@link_id, @ip, @os_type, @browser_type, @create_time);");
+                    ({_paramSql}link_id, {_paramSql}ip, {_paramSql}os_type, {_paramSql}browser_type, {_paramSql}create_time);");
 
             await base.ExecuteAsync(sb.ToString(), model);
         }
@@ -35,9 +37,9 @@ namespace SuperShortLink.Repository
         /// </summary>
         public async Task<int> GetCountAsync(DateTime startTime, DateTime endTime)
         {
-            string sqlstr = @"select count(1)
+            string sqlstr = $@"select count(1)
                               from short_link_log 
-                              where create_time >= @startTime and create_time < @endTime;";
+                              where create_time >= {_paramSql}startTime and create_time < {_paramSql}endTime;";
             var param = new
             {
                 startTime,

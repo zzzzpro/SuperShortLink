@@ -11,9 +11,11 @@ namespace SuperShortLink.Repository
     public class ShortLinkRepository : BaseRepository, IShortLinkRepository
     {
         private readonly string _autoIncrementSql;
+        private readonly string _paramSql;
         public ShortLinkRepository(IOptionsSnapshot<ShortLinkOptions> options) : base(options)
         {
             _autoIncrementSql = options.Value.AutoIncrementSQL;
+            _paramSql = options.Value.ParamSQL;
         }
 
         /// <summary>
@@ -22,10 +24,10 @@ namespace SuperShortLink.Repository
         public async Task<int> InsertAsync(LinkModel model)
         {
             var sb = new StringBuilder(
-              @"insert into short_link
+              @$"insert into short_link
                     (short_url, origin_url, create_time, update_time, access_count)
                 values
-                    (@short_url, @origin_url, @create_time, @update_time, @access_count);");
+                    ({_paramSql}short_url, {_paramSql}origin_url, {_paramSql}create_time, {_paramSql}update_time, {_paramSql}access_count);");
 
             sb.Append($"select {_autoIncrementSql};");
 
@@ -38,9 +40,9 @@ namespace SuperShortLink.Repository
         /// </summary>
         public async Task<int> UpdateShortUrlAsync(LinkModel model)
         {
-            string sqlstr = @"update short_link
-                              set short_url=@short_url,update_time=@update_time
-                              where id=@Id;";
+            string sqlstr = @$"update short_link
+                              set short_url={_paramSql}short_url,update_time={_paramSql}update_time
+                              where id={_paramSql}Id;";
             var param = new
             {
                 Id = model.id,
@@ -56,9 +58,9 @@ namespace SuperShortLink.Repository
         /// </summary>
         public async Task<int> UpdateAccessDataAsync(long id)
         {
-            string sqlstr = @"update short_link
-                              set access_count=access_count + 1,update_time=@update_time
-                              where Id=@Id;";
+            string sqlstr = @$"update short_link
+                              set access_count=access_count + 1,update_time={_paramSql}update_time
+                              where Id={_paramSql}Id;";
             var param = new
             {
                 Id = id,
@@ -73,9 +75,9 @@ namespace SuperShortLink.Repository
         /// </summary>
         public async Task<string> GetOriginUrlAsync(long id)
         {
-            string sqlstr = @"select origin_url
+            string sqlstr = @$"select origin_url
                               from short_link 
-                              where Id = @Id;";
+                              where Id = {_paramSql}Id;";
             var param = new
             {
                 Id = id,
@@ -89,9 +91,9 @@ namespace SuperShortLink.Repository
         /// </summary>
         public async Task<int> GetCountAsync(DateTime startTime, DateTime endTime)
         {
-            string sqlstr = @"select count(1)
+            string sqlstr = @$"select count(1)
                               from short_link 
-                              where create_time >= @startTime and create_time < @endTime;";
+                              where create_time >= {_paramSql}startTime and create_time < {_paramSql}endTime;";
             var param = new
             {
                 startTime,
@@ -106,9 +108,9 @@ namespace SuperShortLink.Repository
         /// </summary>
         public async Task<LinkModel> GetAsync(long id)
         {
-            string sqlstr = @"select *
+            string sqlstr =@$"select *
                               from short_link 
-                              where Id = @Id;";
+                              where Id = {_paramSql}Id;";
             var param = new
             {
                 Id = id,
@@ -122,18 +124,18 @@ namespace SuperShortLink.Repository
         /// </summary>
         public async Task<PageResponseDto<LinkModel>> GetListAsync(RecordListRequest dto)
         {
-            var sb = new StringBuilder(@"select *
+            var sb = new StringBuilder(@$"select *
                                          from short_link 
                                          where 1 = 1 ");
 
             if (!string.IsNullOrEmpty(dto.origin_url))
             {
-                sb.Append(" and origin_url like @origin_url ");
+                sb.Append($" and origin_url like {_paramSql}origin_url ");
                 dto.origin_url = $"%{dto.origin_url}%";
             }
             if (!string.IsNullOrEmpty(dto.short_url))
             {
-                sb.Append(" and short_url like @short_url ");
+                sb.Append($" and short_url like {_paramSql}short_url ");
                 dto.short_url = $"%{dto.short_url}%";
             }
 
