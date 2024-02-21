@@ -18,7 +18,7 @@
 - [x] 支持自定义短链长度
 - [x] 支持在线短链生成及跳转长链
 - [x] 支持实时统计短链访问次数
-- [x] 支持多种持久化方式：MySQL/PostgreSQL/SqlServer(2012及以上)
+- [x] 支持多种持久化方式：MySQL/PostgreSQL/SqlServer(2012及以上)/SQLite
 - [x] 傻瓜式配置，开箱即用
 
 ------
